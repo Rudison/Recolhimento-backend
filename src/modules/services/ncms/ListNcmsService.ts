@@ -6,6 +6,9 @@ import { getConnection } from 'typeorm';
 interface IRequest {
   empresaId: string;
 }
+interface IRequestCnpj {
+  cnpj: string;
+}
 
 class ListNcmService {
   public async execute(): Promise<Ncms[] | undefined> {
@@ -37,6 +40,27 @@ class ListNcmService {
       .innerJoin('Empresas', 'b', 'b.id = a."empresaId"')
       .where('a."empresaId" = :empresaId', { empresaId })
       .orderBy('a.descricao')
+      .getRawMany();
+
+    if (ncms == null) {
+      throw new AppError('Nenhum Ncm Encontrado', 401);
+    }
+
+    return ncms;
+  }
+
+  public async getByCnpj({ cnpj }: IRequestCnpj): Promise<Ncms[] | undefined> {
+    //
+    const conn = getConnection();
+    const ncmRepository = conn.getCustomRepository(NcmRepository);
+
+    const ncms = await ncmRepository
+      .createQueryBuilder('a')
+      .select('a."numeroNcm"')
+      .addSelect('a."cest"')
+      .addSelect('a."mva"')
+      .innerJoin('Empresas', 'b', 'b.id = a."empresaId"')
+      .where('b."cnpj" = :cnpj', { cnpj })
       .getRawMany();
 
     if (ncms == null) {

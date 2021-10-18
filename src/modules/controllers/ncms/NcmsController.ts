@@ -37,6 +37,17 @@ export default class NcmsController {
     return response.json(empresa);
   }
 
+  public async getByCnpj(
+    request: Request,
+    response: Response
+  ): Promise<Response> {
+    const { cnpj } = request.params;
+    const ncms = new ListNcmService();
+    const empresa = await ncms.getByCnpj({ cnpj });
+
+    return response.json(empresa);
+  }
+
   public async create(request: Request, response: Response): Promise<Response> {
     const { empresaId, descricao, numeroNcm, cest, mva } = request.body;
 

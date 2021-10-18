@@ -28,6 +28,16 @@ ncmsRouter.get(
   ncmsController.getByCompany
 );
 
+ncmsRouter.get(
+  '/getByCnpj/:cnpj',
+  celebrate({
+    [Segments.PARAMS]: {
+      cnpj: Joi.string().required()
+    }
+  }),
+  ncmsController.getByCnpj
+);
+
 ncmsRouter.post(
   '/',
   celebrate({
